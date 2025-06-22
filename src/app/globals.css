@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+.--font-title {
+  font-family: var(--font-playfair-display);
+}
+
+.--font-body {
+  font-family: var(--font-raleway);
+}

@@ -1,25 +1,34 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Raleway, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import Navbar from '@/components/Navbar';
 
-const inter = Inter({
-  variable: "--font-roboto",
+const raleway = Raleway({
+  variable: "--font-raleway",
+  subsets: ["latin"],
+});
+
+const playfair_display = Playfair_Display({
+  variable: "--font-playfair-display",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
   title: "Leaf to Leaf",
-  description: "App para gestión de cultivos cannábicos",
+  description: "Tu experiencia natural premium",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="es">
-      <body className={`${inter.variable} antialiased`}>{children}</body>
+      <body className={`${raleway.variable} ${playfair_display.variable} antialiased bg-gradient-to-b from-gray-900 to-gray-950 text-white`}>
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }
