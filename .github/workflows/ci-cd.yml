@@ -23,15 +23,15 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd /var/www/
-            if [ -d "nextjs-app/.git" ]; then
-              cd nextjs-app
+            if [ -d "leaf-to-leaf/.git" ]; then
+              cd leaf-to-leaf
               git fetch --all
               git reset --hard origin/main
               git clean -fd
             else
-              rm -rf nextjs-app
-              git clone git@github.com:${{ github.repository }}.git nextjs-app
-              cd nextjs-app
+              rm -rf leaf-to-leaf
+              git clone git@github.com:${{ github.repository }}.git leaf-to-leaf
+              cd leaf-to-leaf
             fi
             docker-compose down --remove-orphans
             docker-compose build --no-cache
