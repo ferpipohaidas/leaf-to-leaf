@@ -25,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${raleway.variable} ${playfair_display.variable} antialiased bg-gradient-to-b from-gray-900 to-gray-950 text-white`}>
+      <body className={`${raleway.variable} ${playfair_display.variable} antialiased bg-gradient-to-b from-green-800 to-green-950 text-white min-h-screen --font-body`}>
         <Navbar />
         {children}
       </body>
