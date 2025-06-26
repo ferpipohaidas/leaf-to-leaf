@@ -1,70 +1,48 @@
-import { NextAuthOptions } from "next-auth"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
 
-export const authOptions: NextAuthOptions = {
+export const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        username: { label: "Username", type: "text" },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.username || !credentials?.password) {
-          return null
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Por favor ingresa email y contraseña");
         }
 
         const user = await prisma.user.findUnique({
-          where: {
-            username: credentials.username
-          }
-        })
+          where: { email: credentials.email },
+        });
 
-        if (!user || !user.password || !user.username) {
-          return null
+        if (!user || !user.password) {
+          throw new Error("No existe el usuario");
         }
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        )
-
-        if (!isPasswordValid) {
-          return null
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isValid) {
+          throw new Error("Contraseña incorrecta");
         }
 
         return {
           id: user.id,
-          username: user.username,
           email: user.email,
           name: user.name,
-        }
-      }
-    })
+        };
+      },
+    }),
   ],
   session: {
-    strategy: "jwt"
+    strategy: "jwt" as const,
   },
   pages: {
     signIn: "/login",
   },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.username = user.username
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.sub!
-        session.user.username = token.username as string
-      }
-      return session
-    }
-  }
-} 
+  secret: process.env.NEXTAUTH_SECRET,
+}; 

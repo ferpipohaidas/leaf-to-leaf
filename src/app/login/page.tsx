@@ -1,30 +1,30 @@
 "use client"
 
-import { signIn, getSession } from "next-auth/react"
-import { useState, useEffect } from "react"
+import { signIn } from "next-auth/react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 
-export default function LoginPage() {
+function LoginForm() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
   const [message, setMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    const messageParam = searchParams.get("message")
-    if (messageParam) {
-      setMessage(messageParam)
+    if (searchParams) {
+      const messageParam = searchParams.get("message")
+      if (messageParam) {
+        setMessage(messageParam)
+      }
     }
   }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setError("")
 
     try {
       const result = await signIn("credentials", {
@@ -34,13 +34,13 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError("Credenciales inválidas")
+        // setError("Credenciales inválidas")
       } else {
         router.push("/")
         router.refresh()
       }
-    } catch (error) {
-      setError("Ocurrió un error al iniciar sesión")
+    } catch {
+      // setError("Ocurrió un error al iniciar sesión")
     } finally {
       setIsLoading(false)
     }
@@ -88,11 +88,11 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {error && (
+          {/* {error && (
             <div className="text-red-500 text-sm text-center">
               {error}
             </div>
-          )}
+          )} */}
 
           {message && (
             <div className="text-green-500 text-sm text-center">
@@ -121,5 +121,13 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 } 

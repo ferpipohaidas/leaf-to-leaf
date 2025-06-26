@@ -12,7 +12,6 @@ export default function RegisterPage() {
     email: "",
     name: "",
   })
-  const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
@@ -26,18 +25,13 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setError("")
 
     // Validaciones del cliente
     if (formData.password !== formData.confirmPassword) {
-      setError("Las contraseñas no coinciden")
-      setIsLoading(false)
       return
     }
 
     if (formData.password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres")
-      setIsLoading(false)
       return
     }
 
@@ -55,16 +49,14 @@ export default function RegisterPage() {
         }),
       })
 
-      const data = await response.json()
-
       if (!response.ok) {
-        setError(data.error || "Error al registrar usuario")
+        return
       } else {
         // Registro exitoso, redirigir al login
         router.push("/login?message=Usuario registrado exitosamente")
       }
-    } catch (error) {
-      setError("Error de conexión")
+    } catch {
+      return
     } finally {
       setIsLoading(false)
     }
@@ -154,12 +146,6 @@ export default function RegisterPage() {
               />
             </div>
           </div>
-
-          {error && (
-            <div className="text-red-500 text-sm text-center">
-              {error}
-            </div>
-          )}
 
           <div>
             <button

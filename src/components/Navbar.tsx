@@ -72,7 +72,7 @@ export default function Navbar() {
             {/* Nombre del usuario en lugar del logo */}
             <div className="flex-shrink-0">
               <span className="text-white font-bold text-xl">
-                {session.user.username}
+                {(session.user as { username?: string })?.username || 'Usuario'}
               </span>
             </div>
 

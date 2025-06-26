@@ -4,12 +4,12 @@ import bcrypt from "bcryptjs"
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, password, email, name } = await request.json()
+    const { email, password, name } = await request.json()
 
     // Validaciones básicas
-    if (!username || !password) {
+    if (!email || !password || !name) {
       return NextResponse.json(
-        { error: "Usuario y contraseña son requeridos" },
+        { error: "Nombre, email y contraseña son requeridos" },
         { status: 400 }
       )
     }
@@ -22,18 +22,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar si el usuario ya existe
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { username },
-          { email: email || undefined }
-        ]
-      }
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
     })
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "El usuario o email ya existe" },
+        { error: "El email ya existe" },
         { status: 400 }
       )
     }
@@ -44,14 +39,12 @@ export async function POST(request: NextRequest) {
     // Crear el usuario
     const user = await prisma.user.create({
       data: {
-        username,
-        password: hashedPassword,
         email,
+        password: hashedPassword,
         name,
       },
       select: {
         id: true,
-        username: true,
         email: true,
         name: true,
         createdAt: true,
