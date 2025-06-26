@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 
 function LoginForm() {
-  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [message, setMessage] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -28,7 +28,7 @@ function LoginForm() {
 
     try {
       const result = await signIn("credentials", {
-        username,
+        email,
         password,
         redirect: false,
       })
@@ -57,18 +57,18 @@ function LoginForm() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-white">
-                Usuario
+              <label htmlFor="email" className="block text-sm font-medium text-white">
+                Email
               </label>
               <input
-                id="username"
-                name="username"
-                type="text"
+                id="email"
+                name="email"
+                type="email"
                 required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500"
-                placeholder="Ingresa tu usuario"
+                placeholder="Ingresa tu email"
               />
             </div>
             <div>

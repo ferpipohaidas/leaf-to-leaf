@@ -6,11 +6,10 @@ import Link from "next/link"
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    confirmPassword: "",
     email: "",
     name: "",
+    password: "",
+    confirmPassword: "",
   })
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
@@ -35,6 +34,10 @@ export default function RegisterPage() {
       return
     }
 
+    if (!formData.email || !formData.name) {
+      return
+    }
+
     try {
       const response = await fetch("/api/register", {
         method: "POST",
@@ -42,10 +45,9 @@ export default function RegisterPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: formData.username,
+          email: formData.email,
+          name: formData.name,
           password: formData.password,
-          email: formData.email || undefined,
-          name: formData.name || undefined,
         }),
       })
 
@@ -73,28 +75,14 @@ export default function RegisterPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-white">
-                Usuario *
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                required
-                value={formData.username}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500"
-                placeholder="Ingresa tu usuario"
-              />
-            </div>
-            <div>
               <label htmlFor="name" className="block text-sm font-medium text-white">
-                Nombre
+                Nombre *
               </label>
               <input
                 id="name"
                 name="name"
                 type="text"
+                required
                 value={formData.name}
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500"
@@ -103,12 +91,13 @@ export default function RegisterPage() {
             </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-white">
-                Email
+                Email *
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
+                required
                 value={formData.email}
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500"
