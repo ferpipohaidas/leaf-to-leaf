@@ -26,6 +26,9 @@ COPY . .
 # Descomenta la siguiente línea para deshabilitar la telemetría durante la compilación.
 ENV NEXT_TELEMETRY_DISABLED=1
 
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+
 RUN npm run build
 
 # Imagen de producción, copiar todos los archivos y ejecutar next
