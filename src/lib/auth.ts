@@ -14,27 +14,21 @@ export const authOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Por favor ingresa email y contraseña");
+          return null;
         }
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
 
-        if (!user || !user.password) {
-          throw new Error("No existe el usuario");
+        if (user && await bcrypt.compare(credentials.password, user.password)) {
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          };
         }
-
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) {
-          throw new Error("Contraseña incorrecta");
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        };
+        return null;
       },
     }),
   ],
@@ -44,5 +38,4 @@ export const authOptions = {
   pages: {
     signIn: "/login",
   },
-  secret: process.env.NEXTAUTH_SECRET,
 }; 
