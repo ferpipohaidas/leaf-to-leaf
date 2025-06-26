@@ -7,5 +7,34 @@ services:
       - "3001:3000"
     environment:
       - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/leaf_to_leaf
+      - NEXTAUTH_URL=http://localhost:3001
+      - NEXTAUTH_SECRET=-your-secret-key-change-in-production
     restart: unless-stopped
-    container_name: leaf-to-leaf-app 
+    container_name: leaf-to-leaf-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./prisma:/app/prisma
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=leaf_to_leaf
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    container_name: leaf-to-leaf-postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data: 

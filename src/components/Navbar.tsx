@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useSession, signOut } from 'next-auth/react';
 
 interface NavItem {
   href: string;
@@ -19,6 +20,7 @@ const navigationItems: NavItem[] = [
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { data: session, status } = useSession();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -28,11 +30,52 @@ export default function Navbar() {
     setIsMobileMenuOpen(false);
   };
 
+  const handleSignOut = () => {
+    signOut({ callbackUrl: '/' });
+  };
+
+  // Si no hay sesión, solo mostrar el botón de login
+  if (status === 'loading') {
+    return (
+      <nav className="bg-yellow-600 shadow-sm sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-end items-center h-16">
+            <div className="text-white">Cargando...</div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
+  if (!session) {
+    return (
+      <nav className="bg-yellow-600 shadow-sm sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-end items-center h-16">
+            <Link
+              href="/login"
+              className="text-white hover:text-yellow-700 hover:bg-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
+            >
+              Iniciar Sesión
+            </Link>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
   return (
     <>
       <nav className="bg-yellow-600 shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-end items-center h-16">
+          <div className="flex justify-between items-center h-16">
+            {/* Nombre del usuario en lugar del logo */}
+            <div className="flex-shrink-0">
+              <span className="text-white font-bold text-xl">
+                {session.user.username}
+              </span>
+            </div>
+
             {/* Desktop Navigation Links */}
             <div className="hidden md:block">
               <div className="flex items-baseline space-x-4">
@@ -40,12 +83,22 @@ export default function Navbar() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="text-white hover:text-yellow-700 hover:bg-white px-4 py-2 rounded-md text-sm --font-body font-medium transition-all duration-300"
+                    className="text-white hover:text-yellow-700 hover:bg-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
                   >
                     {item.label}
                   </Link>
                 ))}
               </div>
+            </div>
+
+            {/* Botón Cerrar Sesión */}
+            <div className="hidden md:flex items-center">
+              <button
+                onClick={handleSignOut}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-300"
+              >
+                Cerrar Sesión
+              </button>
             </div>
 
             {/* Mobile menu button */}
@@ -110,11 +163,23 @@ export default function Navbar() {
                 href={item.href}
                 onClick={closeMobileMenu}
                 className="text-white hover:text-yellow-700 hover:bg-white block px-3 py-2 rounded-md text-base font-medium transition-all duration-200"
-                style={{ fontFamily: 'var(--font-body)' }}
               >
                 {item.label}
               </Link>
             ))}
+            
+            {/* Mobile Cerrar Sesión */}
+            <div className="border-t border-yellow-600 pt-2 mt-2">
+              <button
+                onClick={() => {
+                  handleSignOut();
+                  closeMobileMenu();
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-all duration-200"
+              >
+                Cerrar Sesión
+              </button>
+            </div>
           </div>
         </div>
       </div>

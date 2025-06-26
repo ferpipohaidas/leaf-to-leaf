@@ -11,6 +11,10 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci
 
+# Copiar esquema de Prisma y generar cliente
+COPY prisma ./prisma
+RUN npx prisma generate
+
 # Reconstruir el código fuente solo cuando sea necesario
 FROM base AS builder
 WORKDIR /app
@@ -45,6 +49,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Copiar script de entrada y hacerlo ejecutable
+COPY docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
+
 USER nextjs
 
 EXPOSE 3000
@@ -52,4 +60,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"] 
+CMD ["./docker-entrypoint.sh"]
