@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
           }
         })
 
-        if (!user || !user.password) {
+        if (!user || !user.password || !user.username) {
           return null
         }
 
