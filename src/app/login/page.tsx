@@ -9,6 +9,7 @@ function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [message, setMessage] = useState("")
+  const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -25,6 +26,7 @@ function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError("")
 
     try {
       const result = await signIn("credentials", {
@@ -34,13 +36,22 @@ function LoginForm() {
       })
 
       if (result?.error) {
-        // setError("Credenciales inválidas")
-      } else {
+        // NextAuth no propaga el mensaje de error específico por seguridad
+        // Pero podemos manejar diferentes tipos de errores
+        if (result.error === "CredentialsSignin") {
+          setError("Email o contraseña incorrectos")
+        } else {
+          setError("Error al iniciar sesión. Intenta nuevamente.")
+        }
+      } else if (result?.ok) {
         router.push("/")
         router.refresh()
+      } else {
+        setError("Error inesperado. Intenta nuevamente.")
       }
-    } catch {
-      // setError("Ocurrió un error al iniciar sesión")
+    } catch (error) {
+      console.error("Error de login:", error)
+      setError("Ocurrió un error al iniciar sesión")
     } finally {
       setIsLoading(false)
     }
@@ -88,14 +99,14 @@ function LoginForm() {
             </div>
           </div>
 
-          {/* {error && (
-            <div className="text-red-500 text-sm text-center">
+          {error && (
+            <div className="text-red-500 text-sm text-center bg-red-100/10 p-3 rounded-md border border-red-300/20">
               {error}
             </div>
-          )} */}
+          )}
 
           {message && (
-            <div className="text-green-500 text-sm text-center">
+            <div className="text-green-500 text-sm text-center bg-green-100/10 p-3 rounded-md border border-green-300/20">
               {message}
             </div>
           )}

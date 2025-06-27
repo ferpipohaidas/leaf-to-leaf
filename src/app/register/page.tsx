@@ -12,6 +12,8 @@ export default function RegisterPage() {
     confirmPassword: "",
   })
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
   const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,17 +26,45 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError("")
+    setSuccess("")
 
     // Validaciones del cliente
-    if (formData.password !== formData.confirmPassword) {
+    if (!formData.name.trim()) {
+      setError("El nombre es requerido")
+      setIsLoading(false)
+      return
+    }
+
+    if (!formData.email.trim()) {
+      setError("El email es requerido")
+      setIsLoading(false)
+      return
+    }
+
+    if (!formData.password) {
+      setError("La contraseña es requerida")
+      setIsLoading(false)
       return
     }
 
     if (formData.password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres")
+      setIsLoading(false)
       return
     }
 
-    if (!formData.email || !formData.name) {
+    if (formData.password !== formData.confirmPassword) {
+      setError("Las contraseñas no coinciden")
+      setIsLoading(false)
+      return
+    }
+
+    // Validación de email básica
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      setError("Por favor ingresa un email válido")
+      setIsLoading(false)
       return
     }
 
@@ -45,20 +75,28 @@ export default function RegisterPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: formData.email,
-          name: formData.name,
+          email: formData.email.trim(),
+          name: formData.name.trim(),
           password: formData.password,
         }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
+        setError(data.error || "Error al crear la cuenta")
         return
-      } else {
-        // Registro exitoso, redirigir al login
-        router.push("/login?message=Usuario registrado exitosamente")
       }
-    } catch {
-      return
+
+      // Registro exitoso
+      setSuccess("¡Cuenta creada exitosamente! Redirigiendo al login...")
+      setTimeout(() => {
+        router.push("/login?message=Usuario registrado exitosamente")
+      }, 2000)
+
+    } catch (error) {
+      console.error("Error al registrar:", error)
+      setError("Error de conexión. Por favor intenta nuevamente.")
     } finally {
       setIsLoading(false)
     }
@@ -135,6 +173,18 @@ export default function RegisterPage() {
               />
             </div>
           </div>
+
+          {error && (
+            <div className="text-red-500 text-sm text-center bg-red-100/10 p-3 rounded-md border border-red-300/20">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="text-green-500 text-sm text-center bg-green-100/10 p-3 rounded-md border border-green-300/20">
+              {success}
+            </div>
+          )}
 
           <div>
             <button
