@@ -10,7 +10,8 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate deploy",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "seed:plants": "node scripts/seed-plants.js"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",

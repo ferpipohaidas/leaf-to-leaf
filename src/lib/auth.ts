@@ -47,6 +47,22 @@ export const authOptions = {
   session: {
     strategy: "jwt" as const,
   },
+  callbacks: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async jwt({ token, user }: any) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async session({ session, token }: any) {
+      if (token) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    },
+  },
   pages: {
     signIn: "/login",
   },

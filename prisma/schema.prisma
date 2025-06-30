@@ -45,6 +45,7 @@ model User {
   createdAt     DateTime  @default(now())
   accounts      Account[]
   sessions      Session[]
+  plants        Plant[]
 }
 
 model VerificationToken {
@@ -53,4 +54,21 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Plant {
+  id              String   @id @default(cuid())
+  name            String
+  genetics        String?
+  phase           String   @default("germinacion") // germinacion, vegetacion, floracion
+  germinationDate DateTime?
+  vegetationDate  DateTime?
+  floweringDate   DateTime?
+  imageUrl        String?
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
 }
