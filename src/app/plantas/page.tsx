@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface Plant {
   id: string;
@@ -190,10 +191,12 @@ export default function Plantas() {
           {plants.length === 0 ? (
             <div className="text-center py-16">
               <div className="mb-6 flex justify-center">
-                <img
+                <Image
                   src="/sad-leaf.png"
                   alt="Hoja triste"
-                  className="w-32 h-32 object-contain opacity-60"
+                  width={128}
+                  height={128}
+                  className="object-contain opacity-60"
                 />
               </div>
               <h2 className="text-2xl font-bold text-gray-800 mb-4">

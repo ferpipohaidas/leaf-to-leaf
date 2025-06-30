@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 
 interface Plant {
   id: string;
@@ -148,7 +149,7 @@ export default function PlantDetail() {
             <div className="lg:col-span-1">
               <div className="w-full h-64 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center shadow-lg">
                 {plant.imageUrl ? (
-                  <img src={plant.imageUrl} alt={plant.name} className="w-full h-full object-cover rounded-lg" />
+                  <Image src={plant.imageUrl} alt={plant.name} width={256} height={256} className="w-full h-full object-cover rounded-lg" />
                 ) : (
                   <div className="text-8xl">🌱</div>
                 )}
